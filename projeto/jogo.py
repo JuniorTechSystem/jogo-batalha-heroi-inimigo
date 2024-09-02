@@ -1,3 +1,4 @@
+import random
 # Personagem: classe mae
 # Heroi: controlado pelo usuario
 # Inimigo: adversario do usuario
@@ -26,9 +27,10 @@ class Personagem:
             self.__vida = 0
     
     def atacar(self, alvo):
-        dano = self.__nivel * 2
-        alvo.receber_ataque(dano)
+        dano = random.randint(self.get_nivel() * 2, self.get_nivel() * 4) # baseado no nível
+        alvo.receber_ataque(dano) 
         print(f"{self.get_nome()} atacou {alvo.get_nome()} e causou {dano} de dano!")
+
 
 class Heroi(Personagem):
     def __init__(self, nome, vida, nivel, habilidade):
@@ -40,6 +42,13 @@ class Heroi(Personagem):
     
     def exibir_detalhes(self):
         return f"{super().exibir_detalhes()}\nHabilidade: {self.get_habilidade()}\n"
+    
+    def ataque_especial(self, alvo):
+        dano = random.randint(self.get_nivel() * 5, self.get_nivel() * 8) # Dano aumentado
+        alvo.receber_ataque(dano)
+        print(f"{self.get_nome()} usou a habilidade especial {self.get_habilidade()} em {alvo.get_nome()} e causou {dano} de dano!")
+
+
 class Inimigo(Personagem):
     def __init__(self, nome, vida, nivel, tipo):
         super().__init__(nome, vida, nivel)
@@ -56,8 +65,8 @@ class Jogo:
     """Classe orquestradora do jogo"""
 
     def __init__(self) -> None:
-        self.heroi = heroi1 = Heroi(nome="Heroí",vida=100, nivel=5, habilidade="Mega força")
-        self.inimigo = inimigo = Inimigo(nome="Morcego", vida=50, nivel=5, tipo="Voador")
+        self.heroi = Heroi(nome="Heroí",vida=100, nivel=5, habilidade="Mega força")
+        self.inimigo = Inimigo(nome="Morcego", vida=50, nivel=5, tipo="Voador")
 
     def iniciar_batalha(self):
         """Fazer a gestão da batalha em turnos"""
@@ -70,11 +79,19 @@ class Jogo:
             input("Pressione Enter para atacar...")
             escolha = input("Escolha (1 - Ataque Normal, 2 - Ataque ESpecial): ")
 
-            if escolha == "1":
+            if escolha == '1':
                 self.heroi.atacar(self.inimigo)
+            elif escolha == '2':
+                self.heroi.ataque_especial(self.inimigo)
             else:
                 print("Escolha inválida escolha novamente")
+            
 
+            
+
+            if self.inimigo.get_vida() > 0:
+                #Inimigo ataca heroi
+                self.inimigo.atacar(self.heroi)
 
         if self.heroi.get_vida() > 0:
             print("\nParabéns você venceu a batalha")
@@ -86,4 +103,6 @@ class Jogo:
 
 jogo = Jogo()
 jogo.iniciar_batalha()
+
+
 
